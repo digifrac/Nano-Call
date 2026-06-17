@@ -80,7 +80,7 @@ Nano Call is **MIT licensed** (see `LICENSE`) - the code is free to use, and fre
 - Verification is **local and cryptographic** (Ed25519, embedded public key) - no phone-home, no network call.
 - The licence binds to the host in your **Site URL** setting (never the request header, so it cannot be spoofed). `www.` is treated the same as the bare domain.
 - Dev hosts (`localhost`, `*.test`, `*.local`, anything with a port) never show the line.
-- The licence covers the **software only** - it does not include relay hosting. Bring your own TURN relay (see below), or take our optional managed-relay add-on.
+- The licence covers the **software only** - it does not include relay hosting. Bring your own TURN relay (see below), or take our optional managed-relay add-on (£5/month).
 - Licences are minted with the private `nano-licence-tools` toolkit (`--product=nano-call`).
 
 ## Relay server (TURN) - REQUIRED for real-world calls
@@ -89,7 +89,7 @@ Calls connect browser to browser. Many real connections cannot go direct (mobile
 
 Three options - self-hosted coturn, the free Metered relay, or any managed TURN - plus a relay-only privacy mode that hides both callers' IPs. **Full setup is in [RELAY.md](RELAY.md).** Start there the moment a real call will not connect.
 
-**Bring your own relay.** The £19 licence covers the software; running a relay is yours to arrange - self-host coturn on a small VPS/seedbox, or use Metered's free tier. RELAY.md walks through both. If you would rather not run one, we also offer an **optional managed relay** as a separate paid add-on - [get in touch](mailto:gruda@hotmail.co.uk) for current pricing.
+**Bring your own relay.** The £19 licence covers the software; running a relay is yours to arrange - self-host coturn on a small VPS/seedbox, or use Metered's free tier. RELAY.md walks through both. If you would rather not run one, we also offer an **optional managed relay** for **£5/month** (we host coturn for you) - [get in touch](mailto:gruda@hotmail.co.uk) to set it up.
 
 ## Audio: echo, and why you want a headset
 
