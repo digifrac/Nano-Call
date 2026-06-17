@@ -18,17 +18,22 @@ encrypted, peer to peer, on ordinary PHP hosting.
 - **Operator console** (`index.html` + `js/console.js`): the business keeps it open
   to receive calls; admin password required to go online; incoming calls show the
   caller's subject and note before answering.
-- **Removable admin** (`admin/`): password-gated setup that writes
-  `data/config.json` (business handle, branding, subjects, theme, site URL,
-  licence). Delete the file after setup to harden; re-upload to edit.
+- **Web installer** (`install.php` + `bootstrap.example.php`): first-run setup
+  that creates an **outside-webroot config directory** (one level above the
+  document root, per-host slug) and writes a gitignored `bootstrap.php` pointing
+  at it. Refuses to re-run once configured; self-deletes after install.
+- **Removable admin** (`admin/`): password-gated setup that writes the business
+  handle, branding, subjects, theme, site URL and licence key to `config.json`,
+  and the operator password hash to `admin.json` - both in the **outside-webroot
+  config directory**, never web-reachable. Delete the folder after setup to
+  harden; re-upload to edit.
 - **Signaling** (`signal.php`): file-based mailboxes, presence, public config
   endpoint (CORS), STUN/TURN config, disposable-visitor sweep. No database.
-  Every file under `data/` (admin password hash, presence tokens, signaling,
-  cached relay creds) is `.php`-named and written with a PHP guard as its first
-  line, so a direct web request returns 403 with an empty body even where
+  Persistent secrets (settings, licence key, password hash) live outside the
+  webroot; the transient in-webroot files under `data/` (call mailboxes,
+  presence, cached relay creds) are `.php`-named and written with a PHP guard as
+  their first line, so a direct request 403s with an empty body even where
   `.htaccess` is ignored (nginx) - defence in depth alongside `data/.htaccess`.
-  Pre-existing `.json` config/admin files are migrated to the guarded form
-  automatically on first read.
 - **Licence** (`licence.php`): per-domain Ed25519 verification (no phone-home,
   embedded public key, host from config not request) that removes the
   "Powered by Nano Call" line on a licensed domain. Part of the Digital Fracture

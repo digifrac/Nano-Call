@@ -24,6 +24,8 @@ index.html                 operator console page (the business)
 widget.html                caller popup page (website visitor)
 signal.php                 signaling server (no DB)
 licence.php                Ed25519 licence verification
+install.php                first-run installer (writes bootstrap.php; delete after)
+bootstrap.example.php      copy to bootstrap.php -> outside-webroot config path
 js/
   core.js                  shared signaling + WebRTC engine
   console.js               operator console logic
@@ -43,9 +45,11 @@ a `phone/` folder; **nano-call-admin.zip** packs `admin/index.php` on its own.
 
 - Keep changes surgical and backward compatible; match the surrounding style.
 - `php -l` every PHP file you touch; syntax-check JS (`node --check`).
-- Test a real call locally (`php -S localhost:8090` from the repo root) in two
-  browser windows: admin → console online → caller widget → connect → hang up.
-- Do not commit anything under `data/` except `.htaccess`.
+- Test a real call locally (`php -S localhost:8090` from the repo root, then
+  open `/install.php` once to write `bootstrap.php`) in two browser windows:
+  admin → console online → caller widget → connect → hang up.
+- Do not commit anything under `data/` except `.htaccess`, nor `bootstrap.php`
+  (per-install; written by `install.php`).
 - Update [CHANGELOG.md](CHANGELOG.md) under an "Unreleased" heading.
 
 ## Security

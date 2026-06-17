@@ -3,10 +3,11 @@
  * Nano Call - admin (REMOVABLE).
  *
  * Configure the business handle, branding, subjects, theme, site URL and
- * licence key here. Everything is written to data/config.json; your admin
- * password hash goes in data/admin.json. Once set up you can DELETE this file
- * from the host to harden the install - the app keeps running off config.json.
- * Re-upload it whenever you want to change settings.
+ * licence key here. Settings + licence key (config.json) and the admin
+ * password hash (admin.json) are written to the OUTSIDE-webroot config
+ * directory set up by install.php (see bootstrap.php). Once set up you can
+ * DELETE this folder from the host to harden the install - the app keeps
+ * running off config.json. Re-upload it whenever you want to change settings.
  *
  * First run: create an admin password (this becomes the password the operator
  * console needs to go online, and the password to reach this admin).
@@ -15,14 +16,21 @@
 declare(strict_types=1);
 session_start();
 
-define('NANO_CALL_BOOTSTRAPPED', true);
-require __DIR__ . '/../licence.php';   // admin lives in its own folder, one level down
+// Per-site bootstrap (one level up, in the phone/ root) defines the outside-
+// webroot config paths and the gate. Missing = not installed yet -> installer.
+$__bootstrap = __DIR__ . '/../bootstrap.php';
+if (!is_file($__bootstrap)) {
+    header('Location: ../install.php');
+    exit;
+}
+require $__bootstrap;                   // NANO_CALL_CONFIG_PATH / _ADMIN_PATH / _DATA_DIR / _BOOTSTRAPPED
+require __DIR__ . '/../licence.php';    // admin lives in its own folder, one level down
 
-$DATA        = __DIR__ . '/../data';
-// data files are .php-named and guard-prefixed (see licence.php); legacy .json
-// copies are migrated on first read
-$CONFIG_FILE = "$DATA/config.json.php";
-$ADMIN_FILE  = "$DATA/admin.json.php";
+// settings + licence key (config.json) and the admin password hash (admin.json)
+// live OUTSIDE the webroot - paths come from bootstrap.php.
+$DATA        = NANO_CALL_DATA_DIR;
+$CONFIG_FILE = NANO_CALL_CONFIG_PATH;
+$ADMIN_FILE  = NANO_CALL_ADMIN_PATH;
 if (!is_dir($DATA)) { @mkdir($DATA, 0755, true); }
 
 function default_config(): array {
@@ -42,28 +50,26 @@ function default_config(): array {
     ];
 }
 function load_config(): array {
-    global $CONFIG_FILE, $DATA;
-    $raw = nano_call_data_load($CONFIG_FILE, "$DATA/config.json");
-    if ($raw !== null) {
-        $c = json_decode($raw, true);
+    global $CONFIG_FILE;   // outside webroot - plain JSON
+    if (is_file($CONFIG_FILE)) {
+        $c = json_decode((string) file_get_contents($CONFIG_FILE), true);
         if (is_array($c)) return array_merge(default_config(), $c);
     }
     return default_config();
 }
 function load_admin(): array {
-    global $ADMIN_FILE, $DATA;
-    $raw = nano_call_data_load($ADMIN_FILE, "$DATA/admin.json");
-    if ($raw !== null) {
-        $a = json_decode($raw, true);
+    global $ADMIN_FILE;    // outside webroot - plain JSON
+    if (is_file($ADMIN_FILE)) {
+        $a = json_decode((string) file_get_contents($ADMIN_FILE), true);
         if (is_array($a)) return $a;
     }
     return [];
 }
 function save_json(string $path, array $data): bool {
-    // .php-suffixed temp so even the brief pre-rename window is guard-protected
-    $tmp  = $path . '.tmp.php';
-    $blob = nano_call_data_wrap(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    if (file_put_contents($tmp, $blob) === false) return false;
+    // config/admin live outside the webroot, so plain JSON (no web guard needed)
+    @mkdir(dirname($path), 0750, true);
+    $tmp = $path . '.tmp';
+    if (file_put_contents($tmp, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) === false) return false;
     @chmod($tmp, 0640);
     return rename($tmp, $path);
 }
@@ -334,7 +340,7 @@ if ((string) $cfg['site_url'] !== '') {
 
     <div class="card">
       <h2>Harden this install</h2>
-      <p class="muted">Once you are set up, you can delete the <strong>admin/</strong> folder from the host. The call line keeps working from <code>data/config.json</code>. Re-upload the admin/ folder any time you want to change settings.</p>
+      <p class="muted">Once you are set up, delete <strong>install.php</strong> and the <strong>admin/</strong> folder from the host. The call line keeps working from your config directory above the webroot. Re-upload the admin/ folder any time you want to change settings.</p>
     </div>
   <?php endif; ?>
 </main>

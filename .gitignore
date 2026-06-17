@@ -4,6 +4,10 @@
 data/*
 !data/.htaccess
 
+# Per-site bootstrap - written by install.php; holds the absolute path to the
+# outside-webroot config dir. Per-install, never committed.
+/bootstrap.php
+
 # Internal pre-launch notes - contain live relay secrets. Never publish.
 /TODO.md
 

@@ -18,17 +18,18 @@ A one-click **"Call us"** button for any website. A visitor taps it, picks why t
 
 ## Put it live
 
-1. Put the frontend into a folder called `phone/` on your host - unzip **nano-call-frontend.zip**, which unpacks to `phone/`. Then add the admin by unzipping **nano-call-admin.zip** into it, giving you `phone/admin/`. Both live together in `phone/` until you remove admin (step "Harden it").
+1. Put the frontend into a folder called `phone/` on your host - unzip **nano-call-frontend.zip**, which unpacks to `phone/`. Then add the admin by unzipping **nano-call-admin.zip** into it, giving you `phone/admin/`. Both live together in `phone/` until you remove them (step "Harden it").
 2. Make sure the `data/` folder is writable by PHP (most hosts: already is; otherwise set it to 755).
-3. Visit `https://yoursite.com/phone/admin/` and:
+3. Run the installer: visit `https://yoursite.com/phone/install.php`. It proposes a config directory **outside your webroot** (where your settings, operator password and licence key are kept, so they are never web-reachable), creates it, and writes `bootstrap.php`. Accept the default or point it elsewhere above the webroot, then click **Create config directory**.
+4. It hands you to `https://yoursite.com/phone/admin/`, where you:
    - create an **admin password** (this also protects the operator console),
    - set the **business handle**, display name, button label, accent, greeting,
    - list your **call subjects** (one per line - the first is pre-selected),
    - set the **Site URL** (where Nano Call is installed - this binds your licence),
    - paste a **licence key** if you have one (removes the "Powered by" line),
    - copy the **embed snippet** it shows you.
-4. Open `https://yoursite.com/phone/` (the console), enter the admin password, **Go online**, and leave the tab open.
-5. Paste the embed snippet onto the website that should have the button.
+5. Open `https://yoursite.com/phone/` (the console), enter the admin password, **Go online**, and leave the tab open.
+6. Paste the embed snippet onto the website that should have the button.
 
 HTTPS is required (browsers only allow microphone access over HTTPS). Your host already has it.
 
@@ -36,7 +37,9 @@ HTTPS is required (browsers only allow microphone access over HTTPS). Your host 
 
 ### Harden it
 
-Once configured, you can **delete the `admin/` folder** from the host - the call line keeps running off your saved settings in `data/`. Re-upload it whenever you want to change settings.
+Once configured, **delete `install.php`** and the **`admin/` folder** from the host (the admin page shows a one-click delete for install.php). The call line keeps running off your settings in the outside-webroot config directory; `signal.php` only ever reads them. Re-upload `admin/` whenever you want to change settings.
+
+Your settings, operator password hash and licence key live in that config directory **above the webroot**, so they are never served even if `.htaccess` is ignored. The only thing in the webroot that points at it is `bootstrap.php` (PHP, never served as text), which `install.php` wrote for you.
 
 ## Add the button to a site
 
@@ -121,4 +124,4 @@ With PHP installed (e.g. XAMPP):
 php -S localhost:8090
 ```
 
-Open `http://localhost:8090/admin/` to set up, then `http://localhost:8090/` for the console. The caller widget is at `http://localhost:8090/widget.html`.
+Open `http://localhost:8090/install.php` first - it writes `bootstrap.php` and a config directory (the default sits beside the project, which is fine for local testing). Then `http://localhost:8090/admin/` to set up, `http://localhost:8090/` for the console, and `http://localhost:8090/widget.html` for the caller widget.

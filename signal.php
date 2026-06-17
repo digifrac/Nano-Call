@@ -17,7 +17,15 @@ header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') { http_response_code(204); exit; }
 
-define('NANO_CALL_BOOTSTRAPPED', true);
+// Per-site bootstrap defines the outside-webroot config paths and the gate.
+// Missing = this install has not been set up yet; point the caller at install.php.
+$__bootstrap = __DIR__ . '/bootstrap.php';
+if (!is_file($__bootstrap)) {
+    http_response_code(503);
+    echo json_encode(['error' => 'not-installed', 'detail' => 'Run install.php to set up Nano Call.']);
+    exit;
+}
+require $__bootstrap;            // defines NANO_CALL_CONFIG_PATH / _ADMIN_PATH / _DATA_DIR / _BOOTSTRAPPED
 require __DIR__ . '/licence.php';
 
 // --- TURN relay fallback (full setup in RELAY.md) ---------------------
@@ -47,13 +55,14 @@ $RELAY_ONLY     = false; // true = route all audio through the relay (hides IPs)
 // last seen; visitor-* names are swept much sooner (they are disposable)
 $RESERVE_SECONDS = 30 * 86400;
 
-$DATA = __DIR__ . '/data';
+$DATA = NANO_CALL_DATA_DIR;             // transient signaling files (in webroot)
 if (!is_dir($DATA)) { mkdir($DATA, 0755, true); }
 
-// data files are .php-named and guard-prefixed (see licence.php); the .json
-// names are legacy paths migrated away on first read
-$CONFIG_FILE = "$DATA/config.json.php";
-$ADMIN_FILE  = "$DATA/admin.json.php";
+// settings + licence key (config.json) and the admin password hash (admin.json)
+// live OUTSIDE the webroot - paths come from bootstrap.php. The transient
+// box-/seen-/ice files stay in $DATA, guard-protected (see licence.php).
+$CONFIG_FILE = NANO_CALL_CONFIG_PATH;
+$ADMIN_FILE  = NANO_CALL_ADMIN_PATH;
 
 // config the app falls back to before the admin has ever saved anything
 function default_config() {
@@ -73,19 +82,17 @@ function default_config() {
     ];
 }
 function read_config() {
-    global $CONFIG_FILE, $DATA;
-    $raw = nano_call_data_load($CONFIG_FILE, "$DATA/config.json");
-    if ($raw !== null) {
-        $c = json_decode($raw, true);
+    global $CONFIG_FILE;   // outside webroot - plain JSON, no guard needed
+    if (is_file($CONFIG_FILE)) {
+        $c = json_decode((string) file_get_contents($CONFIG_FILE), true);
         if (is_array($c)) return array_merge(default_config(), $c);
     }
     return default_config();
 }
 function read_admin() {
-    global $ADMIN_FILE, $DATA;
-    $raw = nano_call_data_load($ADMIN_FILE, "$DATA/admin.json");
-    if ($raw !== null) {
-        $a = json_decode($raw, true);
+    global $ADMIN_FILE;    // outside webroot - plain JSON, no guard needed
+    if (is_file($ADMIN_FILE)) {
+        $a = json_decode((string) file_get_contents($ADMIN_FILE), true);
         if (is_array($a)) return $a;
     }
     return [];
