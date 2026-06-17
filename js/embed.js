@@ -134,7 +134,7 @@
   function poweredByEl() {
     var p = document.createElement('p');
     p.className = 'nanocall-pb';
-    p.innerHTML = 'Powered by <a href="https://nanocall.co.uk/" target="_blank" rel="noopener noreferrer">Nano Call</a>';
+    p.innerHTML = 'Powered by <a href="https://www.digitalfracture.co.uk/nano.php" target="_blank" rel="noopener noreferrer">Nano Call</a>';
     return p;
   }
 
