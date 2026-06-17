@@ -88,6 +88,14 @@ Nano Call is **MIT licensed** (see `LICENSE`) - the code is free to use, and fre
 - The licence covers the **software only** - it does not include relay hosting. Bring your own TURN relay (see below), or take our optional managed-relay add-on (£5/month).
 - Licences are minted with the private `nano-licence-tools` toolkit (`--product=nano-call`).
 
+## Support
+
+Nano Call is free and MIT licensed. If it saved you a phone bill - or you just want to keep the Nano suite maintained - you can buy me a coffee:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-digitalfracture-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/digitalfracture)
+
+Grabbing a per-domain licence (above) supports it too, and removes the badge.
+
 ## Relay server (TURN) - REQUIRED for real-world calls
 
 Calls connect browser to browser. Many real connections cannot go direct (mobile data, strict firewalls, two devices behind one router) and need a TURN relay, or they fail with "ICE failed". This is the one piece that cannot run on PHP hosting.
