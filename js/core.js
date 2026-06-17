@@ -28,7 +28,7 @@ const NC = (() => {
   let rtc = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
   let pc = null, mic = null, myName = null, peerName = null;
   let pending = [], pollTimer = null, muted = false, hooks = {};
-  let gateCtx = null, gateTimer = null;   // half-duplex echo gate
+  let aud = null, outGain = null, gateTimer = null;   // outgoing audio graph + half-duplex duck
 
   const normName = (s) =>
     String(s).trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9_-]/g, '').slice(0, 40);
@@ -109,7 +109,6 @@ const NC = (() => {
     pc = new RTCPeerConnection(rtc);
     try {
       mic = await navigator.mediaDevices.getUserMedia({ audio: AUDIO });
-      mic.getTracks().forEach((t) => pc.addTrack(t, mic));
     } catch {
       // no mic / permission denied - clean up so a retry is not blocked
       try { pc.close(); } catch { /* ignore */ }
@@ -117,9 +116,39 @@ const NC = (() => {
       throw new Error('mic');
     }
 
+    // Route the mic through a gain node so the echo gate can DUCK it smoothly.
+    // Toggling the track on/off (the old way) makes the far end hear choppy
+    // cuts; a gentle gain ramp does not. Falls back to the raw track where
+    // WebAudio is unavailable.
+    let outStream = mic;
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        aud = new AC();
+        if (aud.state === 'suspended') aud.resume();
+        const srcNode = aud.createMediaStreamSource(mic);
+        outGain = aud.createGain();
+        outGain.gain.value = 1;
+        const dest = aud.createMediaStreamDestination();
+        srcNode.connect(outGain);
+        outGain.connect(dest);
+        outStream = dest.stream;
+      }
+    } catch { aud = null; outGain = null; outStream = mic; }
+    outStream.getAudioTracks().forEach((t) => pc.addTrack(t, outStream));
+
     pc.ontrack = (e) => {
       const a = document.getElementById('ncRemoteAudio'); if (a) a.srcObject = e.streams[0];
-      startEchoGate(e.streams[0]);   // kill speaker->mic echo loops on top of browser AEC
+      // Grow the jitter buffer a little so jittery mobile/relay paths play back
+      // smoothly instead of cutting, at the cost of ~200ms of latency.
+      try {
+        const r = e.receiver || pc.getReceivers().find((x) => x.track && x.track.kind === 'audio');
+        if (r) {
+          if ('jitterBufferTarget' in r) r.jitterBufferTarget = 200;
+          else if ('playoutDelayHint' in r) r.playoutDelayHint = 0.2;
+        }
+      } catch { /* not supported - keep the browser default buffer */ }
+      startEchoGate(e.streams[0]);   // duck mic while the far end talks (anti-echo)
     };
     pc.onicecandidate = (e) => { if (e.candidate && peerName) send(peerName, { candidate: e.candidate }); };
     pc.onconnectionstatechange = () => {
@@ -157,40 +186,38 @@ const NC = (() => {
 
   // ---------- half-duplex echo gate ----------
   // Browser AEC handles mild speaker bleed, but a loud open speaker next to the
-  // mic overwhelms it. So while the FAR end is audibly talking, we briefly close
-  // our own mic - their voice then physically cannot loop back out our speakers
-  // and echo. A short hangover rides over natural pauses. This is how hardware
-  // speakerphones behave; it trades full double-talk for a usable, echo-free call.
-  function startEchoGate(stream) {
-    stopEchoGate();
+  // mic overwhelms it. So while the FAR end is audibly talking, we DUCK our own
+  // mic (a smooth gain dip, not a hard cut) - their voice then cannot loop back
+  // out our speakers and echo, and the far end never hears a choppy on/off. A
+  // short hangover rides over natural pauses; it trades full double-talk for a
+  // usable, echo-free call, the way hardware speakerphones do. Uses the WebAudio
+  // gain node from setupPeer; without it we rely on the browser AEC alone.
+  function startEchoGate(remoteStream) {
+    if (gateTimer) { clearInterval(gateTimer); gateTimer = null; }
+    if (!aud || !outGain) return;
     try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      gateCtx = new AC();
-      const src = gateCtx.createMediaStreamSource(stream);
-      const an = gateCtx.createAnalyser();
+      const src = aud.createMediaStreamSource(remoteStream);
+      const an = aud.createAnalyser();
       an.fftSize = 512;
       src.connect(an);                       // analysis only - not routed to output
       const buf = new Uint8Array(an.fftSize);
       let openUntil = 0;
       gateTimer = setInterval(() => {
-        if (!mic) return;
         an.getByteTimeDomainData(buf);
         let s = 0;
         for (let i = 0; i < buf.length; i++) { const d = buf[i] - 128; s += d * d; }
         const rms = Math.sqrt(s / buf.length);
         const now = Date.now();
-        if (rms > 6) openUntil = now + 280;    // far end talking -> hold mic closed ~280ms
-        const closeMic = now < openUntil;
-        if (!muted) {                          // never fight the user's own mute
-          mic.getAudioTracks().forEach((t) => { if (t.enabled === closeMic) t.enabled = !closeMic; });
-        }
+        if (rms > 10) openUntil = now + 200;   // far end talking -> duck mic ~200ms
+        const duck = now < openUntil;
+        // smooth ramp instead of a hard cut; mute is handled on the source track
+        outGain.gain.setTargetAtTime(duck ? 0.08 : 1, aud.currentTime, 0.04);
       }, 60);
     } catch { /* WebAudio unavailable - fall back to browser AEC alone */ }
   }
   function stopEchoGate() {
     if (gateTimer) { clearInterval(gateTimer); gateTimer = null; }
-    if (gateCtx) { try { gateCtx.close(); } catch { /* ignore */ } gateCtx = null; }
+    if (aud) { try { aud.close(); } catch { /* ignore */ } aud = null; outGain = null; }
   }
 
   function end(tellPeer = true) {
