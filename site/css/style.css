@@ -1,0 +1,541 @@
+/* Nano Call - hand-built. One accent, generous whitespace, motion = state.
+   Light + dark: tokens follow the system, a header toggle can force either. */
+
+:root {
+  --bg: #f3f4f7;
+  --card: #ffffff;
+  --well: #eef0f4;
+  --line: #e0e3ea;
+  --ink: #191c22;
+  --muted: #5c636f;
+  --accent: #ff4d00;
+  --accent-press: #db4200;
+  --accent-ink: #ffffff;
+  --accent-text: #c43d00;
+  --danger: #e5484d;
+  --danger-press: #cf3f43;
+  --danger-ink: #ffffff;
+  --ring: rgba(255, 77, 0, 0.2);
+  --radius: 18px;
+  --radius-s: 11px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1115;
+    --card: #171a21;
+    --well: #10131a;
+    --line: #272c37;
+    --ink: #eceef4;
+    --muted: #9aa1b2;
+    --accent: #ff5a1f;
+    --accent-press: #ff4d00;
+    --accent-ink: #2a0e00;
+    --accent-text: #ff854f;
+    --danger: #ff5d5d;
+    --danger-press: #e64f4f;
+    --danger-ink: #2d0707;
+    --ring: rgba(255, 90, 31, 0.22);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f3f4f7; --card: #ffffff; --well: #eef0f4; --line: #e0e3ea;
+  --ink: #191c22; --muted: #5c636f; --accent: #ff4d00; --accent-press: #db4200;
+  --accent-ink: #ffffff; --accent-text: #c43d00; --danger: #e5484d;
+  --danger-press: #cf3f43; --danger-ink: #ffffff; --ring: rgba(255, 77, 0, 0.2);
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f1115; --card: #171a21; --well: #10131a; --line: #272c37;
+  --ink: #eceef4; --muted: #9aa1b2; --accent: #ff5a1f; --accent-press: #ff4d00;
+  --accent-ink: #2a0e00; --accent-text: #ff854f; --danger: #ff5d5d;
+  --danger-press: #e64f4f; --danger-ink: #2d0707; --ring: rgba(255, 90, 31, 0.22);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.5 system-ui, "Segoe UI", sans-serif;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 0;
+  transition: background 0.25s var(--ease), color 0.25s var(--ease);
+}
+
+.phone { width: min(380px, 92vw); }
+
+/* ---------- header ---------- */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.mark { width: 20px; height: 20px; fill: var(--accent-text); flex: none; }
+
+.bar h1 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex: 1;
+}
+
+.iconBtn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+.iconBtn:hover { color: var(--ink); border-color: var(--muted); }
+.iconBtn svg { width: 18px; height: 18px; fill: currentColor; }
+.iconBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line);
+  transition: background 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.dot.on { background: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+
+/* ---------- screens ---------- */
+.screen, .card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 26px 22px 24px;
+  display: grid;
+  gap: 14px;
+}
+.screen { animation: screen-in 0.22s var(--ease); }
+.screen.center { justify-items: center; text-align: center; }
+
+/* the dialer view is a stack of two cards, not one card */
+.screen.stack {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  animation: none;
+}
+.screen.stack .card { animation: screen-in 0.22s var(--ease); }
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hidden { display: none !important; }
+
+/* ---------- text ---------- */
+.lede { color: var(--muted); font-size: 0.95rem; }
+
+label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.me { font-size: 0.9rem; color: var(--muted); }
+.me strong { color: var(--ink); }
+
+.big { font-size: 1.35rem; line-height: 1.25; }
+.sub { color: var(--muted); margin-top: -10px; }
+
+.timer {
+  font-size: 2.1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent-text);
+  letter-spacing: 0.02em;
+}
+
+.hint { min-height: 1.3em; font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- inputs ---------- */
+input {
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font-size: 1rem;
+  padding: 12px 14px;
+  width: 100%;
+  min-width: 0;
+  transition: border-color 0.15s var(--ease);
+}
+input::placeholder { color: var(--muted); opacity: 1; }
+input:hover { border-color: var(--muted); }
+input:focus { outline: none; border-color: var(--accent); }
+input[readonly] { color: var(--muted); font-size: 0.8rem; }
+
+/* ---------- buttons ---------- */
+button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 12px 16px;
+  color: var(--ink);
+  background: transparent;
+  transition: background 0.15s var(--ease), border-color 0.15s var(--ease),
+              color 0.15s var(--ease), transform 0.1s var(--ease);
+}
+button:active { transform: scale(0.97); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
+
+.primary { background: var(--accent); color: var(--accent-ink); }
+.primary:hover { background: var(--accent-press); }
+
+.danger { background: var(--danger); color: var(--danger-ink); }
+.danger:hover { background: var(--danger-press); }
+
+.ghost { background: var(--well); border-color: var(--line); color: var(--ink); }
+.ghost:hover { border-color: var(--muted); }
+
+button.big { padding: 14px 18px; font-size: 1rem; }
+#goOnline { width: 100%; }
+
+.row { display: flex; gap: 10px; }
+.row input { flex: 1; }
+
+.callRow { width: 100%; margin-top: 10px; }
+.callRow button { flex: 1; }
+
+/* ---------- avatar ---------- */
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.9rem;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-ink);
+  margin-bottom: 4px;
+  position: relative;
+  text-transform: uppercase;
+}
+.avatar.unknown { background: var(--line); color: var(--muted); }
+
+.avatar.ringing::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  animation: ring-pulse 1.4s var(--ease) infinite;
+}
+
+@keyframes ring-pulse {
+  0%   { transform: scale(0.92); opacity: 0.9; }
+  70%  { transform: scale(1.18); opacity: 0; }
+  100% { transform: scale(1.18); opacity: 0; }
+}
+
+.avatar.oncall { box-shadow: 0 0 0 3px var(--ring); }
+
+/* ---------- text-link button (back up / restore / add code) ---------- */
+.linkBtn {
+  background: transparent;
+  border: 0;
+  padding: 4px 2px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-text);
+}
+.linkBtn:hover { color: var(--accent-press); text-decoration: underline; }
+.linkBtn:active { transform: none; }
+
+/* ---------- call screening ---------- */
+.screenRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.screenStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.screenStatus svg { width: 15px; height: 15px; fill: var(--muted); flex: none; }
+.screenStatus.locked svg { fill: var(--accent-text); }
+.screenRow .linkBtn { flex: none; }
+.screenEdit { display: flex; gap: 10px; }
+.screenEdit input { flex: 1; }
+
+/* ---------- phone book ---------- */
+.book { display: grid; gap: 12px; }
+.bookHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.bookTools { display: flex; gap: 4px; }
+.bookTitle { display: inline-flex; align-items: center; gap: 6px; }
+.ic-shield { width: 13px; height: 13px; fill: var(--accent-text); flex: none; }
+#bookLock { display: grid; gap: 10px; }
+#bookOpen { display: grid; gap: 12px; }
+.lockMsg { font-size: 0.85rem; color: var(--muted); }
+#bookLockBtn, #vaultReset { justify-self: start; }
+.share {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+  display: grid;
+  gap: 12px;
+}
+.bookTitle { font-size: 0.8rem; font-weight: 500; color: var(--muted); }
+
+#contactList {
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  max-height: 196px;
+  overflow-y: auto;
+}
+#contactList .empty { color: var(--muted); font-size: 0.85rem; padding: 6px 2px; }
+#contactList li { display: flex; align-items: center; gap: 4px; }
+
+.contactCall {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 10px;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: var(--radius-s);
+}
+.contactCall:hover { background: var(--well); }
+
+.cAvatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--well);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.cName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.cDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line);
+  flex: none;
+  margin-left: auto;
+  transition: background 0.25s var(--ease);
+}
+.cDot.on { background: var(--accent); }
+
+.contactDel {
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 400;
+}
+.contactDel:hover { color: var(--danger); background: var(--well); }
+
+/* ---------- Nano Call: console + caller widget ---------- */
+.barTag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+  background: var(--ring);
+  padding: 2px 8px;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+/* the subject + note inputs in the caller popup */
+select, textarea {
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+  padding: 12px 14px;
+  width: 100%;
+  transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+select:hover, textarea:hover { border-color: var(--muted); }
+select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+textarea { resize: vertical; min-height: 56px; }
+
+/* subtle operator tip (use headphones) */
+.tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 13px;
+  margin-top: 2px;
+}
+.tip svg { width: 14px; height: 14px; fill: var(--accent-text); flex: none; }
+
+/* incoming-call subject note on the console */
+.note {
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.95rem;
+  margin-top: -6px;
+  max-width: 100%;
+  word-break: break-word;
+}
+
+button.big { width: 100%; }
+.intro .big, #intro .big, #callBtn { width: 100%; }
+
+/* "Powered by Nano Call" - licence removes it */
+.poweredBy {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.poweredBy a { color: var(--muted); text-decoration: none; }
+.poweredBy a:hover { color: var(--accent-text); text-decoration: underline; }
+
+/* ---------- caller widget (embedded popup OR standalone mobile page) ---------- */
+body.widget { place-items: stretch; padding: 0; background: var(--card); }
+.wphone {
+  width: 100%;
+  max-width: 400px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 16px 18px 16px;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 14px;
+}
+
+.wbar { display: flex; align-items: center; gap: 10px; }
+.wbrand { display: inline-flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.wavatar {
+  width: 34px; height: 34px; border-radius: 50%; flex: none;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink);
+  font-weight: 700; font-size: 0.95rem; text-transform: uppercase;
+}
+.wlogo { height: 30px; width: auto; border-radius: 6px; flex: none; }
+.wtitle { font-size: 1.02rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.wscreen { display: grid; gap: 13px; align-content: start; animation: screen-in 0.2s var(--ease); }
+.wscreen.center { justify-items: center; text-align: center; align-content: center; gap: 13px; }
+
+.field { display: grid; gap: 6px; }
+.optional { color: var(--muted); font-weight: 400; }
+
+/* native select, dressed with a chevron */
+.selectWrap { position: relative; }
+.selectWrap select { appearance: none; -webkit-appearance: none; padding-right: 38px; cursor: pointer; }
+.selectChev { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; fill: var(--muted); pointer-events: none; }
+
+.callCta { width: 100%; margin-top: 2px; }
+
+.trust {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  font-size: 0.78rem; color: var(--muted); text-align: center;
+}
+.trust svg { width: 14px; height: 14px; fill: var(--accent-text); flex: none; }
+
+/* call-state orb for calling / in-call / ended */
+.orb {
+  width: 84px; height: 84px; border-radius: 50%; position: relative;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink);
+}
+.orb svg { width: 36px; height: 36px; fill: currentColor; }
+.orb.ringing::after {
+  content: ""; position: absolute; inset: -7px; border-radius: 50%;
+  border: 2px solid var(--accent); animation: ring-pulse 1.4s var(--ease) infinite;
+}
+.orb.live { box-shadow: 0 0 0 3px var(--ring); }
+.orb.done { background: var(--well); color: var(--accent-text); }
+.liveDot { width: 16px; height: 16px; border-radius: 50%; background: var(--accent-ink); animation: live-breathe 1.6s ease-in-out infinite; }
+@keyframes live-breathe { 0%,100% { opacity: .45; transform: scale(.78); } 50% { opacity: 1; transform: scale(1); } }
+
+.status { font-size: 0.78rem; color: var(--accent-text); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+.subjectChip {
+  display: inline-block; font-size: 0.85rem; color: var(--muted);
+  background: var(--well); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 14px; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* disabled / loading state for any button */
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button:disabled:active { transform: none; }
+
+/* ---------- password field with show/hide peek + error state ---------- */
+.pwWrap { position: relative; display: grid; }
+.pwWrap input { padding-right: 46px; }
+.pwPeek {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border: 0; background: transparent; color: var(--muted);
+  border-radius: 8px; padding: 0; cursor: pointer;
+}
+.pwPeek:hover { color: var(--ink); }
+.pwPeek:active { transform: translateY(-50%); }
+.pwPeek:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pwPeek svg { width: 19px; height: 19px; fill: currentColor; }
+
+input.bad { border-color: var(--danger); }
+input.bad:focus { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(229, 72, 77, 0.18); }
+.hint.isError { color: var(--danger); }
+
+@keyframes nc-shake { 10%,90% { transform: translateX(-1px); } 30%,70% { transform: translateX(2px); } 50% { transform: translateX(-3px); } }
+.shake { animation: nc-shake 0.3s ease; }
+
+/* ---------- motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .screen, .wscreen { animation: none; }
+  .avatar.ringing::after, .orb.ringing::after { animation: none; opacity: 0.9; }
+  .liveDot { animation: none; opacity: 0.9; }
+  .shake { animation: none; }
+  button:active { transform: none; }
+  body, .dot, input, button, .iconBtn, .cDot, select, textarea { transition: none; }
+}

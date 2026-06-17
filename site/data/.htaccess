@@ -1,0 +1,2 @@
+# mailbox files are private - only signal.php may read them
+Require all denied

@@ -1,0 +1,15 @@
+# Runtime files written per install - never commit anything under data/
+# except the .htaccess that protects the folder. (No trailing # comments on
+# pattern lines: git treats them as part of the pattern.)
+site/data/*
+!site/data/.htaccess
+
+# Internal pre-launch notes - contain live relay secrets. Never publish.
+/TODO.md
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*~
+.idea/
+.vscode/
