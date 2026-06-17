@@ -1,3 +1,2 @@
-# Adds a "Sponsor" button to the repo. Buy Me a Coffee has no native key,
-# so it goes under `custom`.
-custom: ["https://buymeacoffee.com/digitalfracture"]
+# Adds a "Sponsor" button to the repo (matches Nano Cart / Nano CMS).
+buy_me_a_coffee: digitalfracture

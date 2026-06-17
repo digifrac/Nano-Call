@@ -1,5 +1,7 @@
 # Nano Call
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-digitalfracture-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/digitalfracture)
+
 A one-click **"Call us"** button for any website. A visitor taps it, picks why they are calling, and talks to the business live in the browser. Free, encrypted, peer to peer. Hand built, no frameworks, no Node, no database. Runs on any ordinary PHP web host.
 
 **Live demo:** the "Call us" button is running in the footer of **[digitalfracture.co.uk](https://digitalfracture.co.uk)** — scroll to the bottom and give it a try.
