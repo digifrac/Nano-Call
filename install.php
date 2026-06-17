@@ -99,10 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 
 /* ---- already configured? bail ---------------------------------------- */
 if (file_exists($bootstrap)) {
-    nano_install_page('already configured',
-        '<div class="warning"><p><strong>This install is already configured.</strong> <code>bootstrap.php</code> exists; re-running the installer would overwrite the live configuration.</p></div>'
-        . '<p>To reconfigure from scratch, delete <code>bootstrap.php</code> AND the config directory it points at, then reload.</p>'
-        . '<p><a class="btn" href="' . nano_install_h($admin_url) . '">Go to admin</a> ' . $delete_form . '</p>');
+    $here = basename(rtrim($phone_dir, '/'));
+    $body = '<div class="success"><p><strong>Config is in place.</strong> <code>bootstrap.php</code> exists, so this install is set up - the installer will not overwrite it.</p></div>';
+    if (!is_file($phone_dir . '/admin/index.php')) {
+        $body .= '<div class="warning"><p><strong>Upload the admin folder to finish.</strong> The <code>admin/</code> folder (from <code>nano-call-admin.zip</code>) is not on the server yet - upload it into <code>' . nano_install_h($here) . '/</code> so you have <code>' . nano_install_h($here) . '/admin/index.php</code>, then reload this page.</p></div>';
+    }
+    $body .= '<h2>Next: set up the admin</h2>'
+        . '<p><a class="btn" href="' . nano_install_h($admin_url) . '">Go to admin setup</a></p>'
+        . '<p>Create the operator password and your call settings there. When setup is done, harden the install by deleting this file: ' . $delete_form . '</p>'
+        . '<p class="meta">To reconfigure from scratch, delete <code>bootstrap.php</code> AND the config directory it points at, then reload.</p>';
+    nano_install_page('ready - set up the admin', $body);
     exit;
 }
 
@@ -152,15 +158,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         if (empty($errors)) {
+            $here = basename(rtrim($phone_dir, '/'));   // e.g. "phone"
+            // admin/ ships as a SEPARATE zip; warn if it is not uploaded yet so
+            // the "open admin" button does not just 404.
+            $warn = is_file($phone_dir . '/admin/index.php') ? '' :
+                '<div class="warning"><p><strong>Upload the admin folder first.</strong> The <code>admin/</code> folder (from <code>nano-call-admin.zip</code>) is not on the server yet - upload it into <code>' . nano_install_h($here) . '/</code> so you have <code>' . nano_install_h($here) . '/admin/index.php</code>, otherwise the button below shows "not found". Then reload this page or open the link directly.</p></div>';
             nano_install_page('install complete',
-                '<div class="success"><p><strong>Installed.</strong> <code>bootstrap.php</code> is in place and points at <code>' . nano_install_h($cfg_dir) . '</code>.</p></div>'
-                . '<h2>Next step</h2>'
+                '<div class="success"><p><strong>Config installed.</strong> <code>bootstrap.php</code> is in place and points at <code>' . nano_install_h($cfg_dir) . '</code>.</p></div>'
+                . '<h2>Next: set up the admin</h2>'
+                . $warn
                 . '<p><a class="btn" href="' . nano_install_h($admin_url) . '">Open the admin setup</a></p>'
-                . '<p>The admin page creates the operator password and your call settings. <strong>Do not delete install.php yet</strong> - finish setup first.</p>'
+                . '<p>That opens the admin page, where you create the operator password and enter your call settings. <strong>Do not delete install.php yet</strong> - finish setup first; the admin dashboard then offers a one-click "delete install.php".</p>'
                 . '<h2>What just happened</h2><ul>'
                 . '<li>Created <code>' . nano_install_h($cfg_dir) . '</code> (mode 0750) for outside-webroot config.</li>'
-                . '<li>Wrote <code>bootstrap.php</code> in phone/ pointing at it.</li>'
-                . '<li>No <code>config.json</code> yet - that is written when you complete admin setup.</li>'
+                . '<li>Wrote <code>bootstrap.php</code> in <code>' . nano_install_h($here) . '/</code> pointing at it.</li>'
+                . '<li>No <code>config.json</code> yet - that is written when you finish admin setup.</li>'
                 . '</ul>');
             exit;
         }
