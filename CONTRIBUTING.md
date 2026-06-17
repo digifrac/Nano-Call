@@ -17,31 +17,35 @@ bar for new code is that it stays that way.
 
 ## Project layout
 
+The repo root *is* the deployable (it ships as `phone/`):
+
 ```
-site/
-  index.html                 operator console page (the business)
-  widget.html                caller popup page (website visitor)
-  signal.php                 signaling server (no DB)
-  licence.php                Ed25519 licence verification
-  js/
-    core.js                  shared signaling + WebRTC engine
-    console.js               operator console logic
-    widget.js                caller widget logic
-    embed.js                 the button loader pasted on client sites
-  css/
-    style.css                one stylesheet, light + dark tokens
-  admin/index.php            removable setup UI (delete the folder to harden)
-  data/                      runtime files (gitignored); each is .php-named and
-                             guard-prefixed so a direct hit 403s, plus .htaccess
+index.html                 operator console page (the business)
+widget.html                caller popup page (website visitor)
+signal.php                 signaling server (no DB)
+licence.php                Ed25519 licence verification
+js/
+  core.js                  shared signaling + WebRTC engine
+  console.js               operator console logic
+  widget.js                caller widget logic
+  embed.js                 the button loader pasted on client sites
+css/
+  style.css                one stylesheet, light + dark tokens
+admin/index.php            removable setup UI (delete the folder to harden)
+data/                      runtime files (gitignored); each is .php-named and
+                           guard-prefixed so a direct hit 403s, plus .htaccess
 ```
+
+Release zips: **nano-call-frontend.zip** packs the above (minus `admin/`) into
+a `phone/` folder; **nano-call-admin.zip** packs `admin/index.php` on its own.
 
 ## Before a pull request
 
 - Keep changes surgical and backward compatible; match the surrounding style.
 - `php -l` every PHP file you touch; syntax-check JS (`node --check`).
-- Test a real call locally (`php -S localhost:8090 -t site`) in two browser
-  windows: admin → console online → caller widget → connect → hang up.
-- Do not commit anything under `site/data/` except `.htaccess`.
+- Test a real call locally (`php -S localhost:8090` from the repo root) in two
+  browser windows: admin → console online → caller widget → connect → hang up.
+- Do not commit anything under `data/` except `.htaccess`.
 - Update [CHANGELOG.md](CHANGELOG.md) under an "Unreleased" heading.
 
 ## Security

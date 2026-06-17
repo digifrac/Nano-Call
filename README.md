@@ -18,16 +18,16 @@ A one-click **"Call us"** button for any website. A visitor taps it, picks why t
 
 ## Put it live
 
-1. Upload the contents of `site/` to a folder on your host, e.g. `call/`.
+1. Put the frontend into a folder called `phone/` on your host - unzip **nano-call-frontend.zip**, which unpacks to `phone/`. Then add the admin by unzipping **nano-call-admin.zip** into it, giving you `phone/admin/`. Both live together in `phone/` until you remove admin (step "Harden it").
 2. Make sure the `data/` folder is writable by PHP (most hosts: already is; otherwise set it to 755).
-3. Visit `https://yoursite.com/call/admin/` and:
+3. Visit `https://yoursite.com/phone/admin/` and:
    - create an **admin password** (this also protects the operator console),
    - set the **business handle**, display name, button label, accent, greeting,
    - list your **call subjects** (one per line - the first is pre-selected),
    - set the **Site URL** (where Nano Call is installed - this binds your licence),
    - paste a **licence key** if you have one (removes the "Powered by" line),
    - copy the **embed snippet** it shows you.
-4. Open `https://yoursite.com/call/` (the console), enter the admin password, **Go online**, and leave the tab open.
+4. Open `https://yoursite.com/phone/` (the console), enter the admin password, **Go online**, and leave the tab open.
 5. Paste the embed snippet onto the website that should have the button.
 
 HTTPS is required (browsers only allow microphone access over HTTPS). Your host already has it.
@@ -45,13 +45,13 @@ The embed script gives you two styles - use either or both, on any website:
 **Floating button** (parks in a page corner):
 
 ```html
-<script src="https://yoursite.com/call/js/embed.js" data-nano-call="floating"></script>
+<script src="https://yoursite.com/phone/js/embed.js" data-nano-call="floating"></script>
 ```
 
 **Inline button** (renders exactly where you drop the placeholder):
 
 ```html
-<script src="https://yoursite.com/call/js/embed.js"></script>
+<script src="https://yoursite.com/phone/js/embed.js"></script>
 <span data-nano-call-button></span>
 ```
 
@@ -118,7 +118,7 @@ Bottom line: for a business line, give the operator a cheap headset, or run the 
 With PHP installed (e.g. XAMPP):
 
 ```
-php -S localhost:8090 -t site
+php -S localhost:8090
 ```
 
 Open `http://localhost:8090/admin/` to set up, then `http://localhost:8090/` for the console. The caller widget is at `http://localhost:8090/widget.html`.
