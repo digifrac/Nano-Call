@@ -80,7 +80,7 @@ Browsers poll `signal.php` every ~1.5s, so a call takes a couple of seconds to r
 
 ## Licence (per domain)
 
-Nano Call is **MIT licensed** (see `LICENSE`) - the code is free to use, and free to run with the small **"Powered by Nano Call"** line shown. To remove that line, buy a **per-domain licence key for £19 (one off, per domain)**. The line shows under the button and in the call popup until a valid key for that domain is set.
+Nano Call is **MIT licensed** (see `LICENSE`) - the code is free to use, and free to run with the small **"Powered by Nano Call"** line shown. To remove that line, buy a **per-domain licence key for £19.99 (one off, per domain)**. The line shows under the button and in the call popup until a valid key for that domain is set.
 
 - Verification is **local and cryptographic** (Ed25519, embedded public key) - no phone-home, no network call.
 - The licence binds to the host in your **Site URL** setting (never the request header, so it cannot be spoofed). `www.` is treated the same as the bare domain.
@@ -94,7 +94,7 @@ Calls connect browser to browser. Many real connections cannot go direct (mobile
 
 Three options - self-hosted coturn, the free Metered relay, or any managed TURN - plus a relay-only privacy mode that hides both callers' IPs. **Full setup is in [RELAY.md](RELAY.md).** Start there the moment a real call will not connect.
 
-**Bring your own relay.** The £19 licence covers the software; running a relay is yours to arrange - self-host coturn on a small VPS/seedbox, or use Metered's free tier. RELAY.md walks through both. If you would rather not run one, we also offer an **optional managed relay** for **£5/month** (we host coturn for you) - [get in touch](mailto:gruda@hotmail.co.uk) to set it up.
+**Bring your own relay.** The £19.99 licence covers the software; running a relay is yours to arrange - self-host coturn on a small VPS/seedbox, or use Metered's free tier. RELAY.md walks through both. If you would rather not run one, we also offer an **optional managed relay** for **£5/month** (we host coturn for you) - [get in touch](mailto:gruda@hotmail.co.uk) to set it up.
 
 ## Audio: echo, and why you want a headset
 
