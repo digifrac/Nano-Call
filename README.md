@@ -16,6 +16,8 @@ A one-click **"Call us"** button for any website. A visitor taps it, picks why t
 | **Operator console** | `index.html` | The business - kept open all day to receive calls. |
 | **Caller widget** | `js/embed.js` + `widget.html` | Website visitors - the button + call popup. |
 
+Before any of those, you run a one-time **installer** (`install.php`) that chooses where your config is stored - in a directory **outside the webroot**, so your settings, operator password and licence key are never web-reachable. It writes a small `bootstrap.php` pointing at that directory, then you delete it. Walked through below.
+
 ## Put it live
 
 1. Put the frontend into a folder called `phone/` on your host - unzip **nano-call-frontend.zip**, which unpacks to `phone/`. Then add the admin by unzipping **nano-call-admin.zip** into it, giving you `phone/admin/`. Both live together in `phone/` until you remove them (step "Harden it").
@@ -114,6 +116,7 @@ Bottom line: for a business line, give the operator a cheap headset, or run the 
 - **Audio is end to end encrypted** (WebRTC DTLS-SRTP). Your host never hears it, the optional TURN relay only ever sees encrypted data. Automatic, not optional.
 - **The operator console is password protected.** Only someone with the admin password can put the business handle online, so a stranger cannot grab your line and intercept calls.
 - **No accounts, numbers, or call logs.** The server stores only the business config, a per-browser token, and transient call notes. Visitors are anonymous throwaway names, swept automatically.
+- **Config, password and licence key live outside the webroot.** The installer puts them in a directory above your public folder, so they are never served even if `.htaccess` is ignored (e.g. on nginx). Only `bootstrap.php` (PHP, never sent as text) points at them. The transient in-webroot signaling files under `data/` are additionally `.php`-guarded so a direct request returns 403.
 - **Direct calls reveal IP addresses** to the other party (inherent to peer to peer). To hide them, set `$RELAY_ONLY = true` in `signal.php` (needs a TURN server) - all audio then routes through the relay.
 
 ## Test locally
