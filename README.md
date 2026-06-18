@@ -4,7 +4,7 @@
 
 A one-click **"Call us"** button for any website. A visitor taps it, picks why they are calling, and talks to the business live in the browser. Free, encrypted, peer to peer. Hand built, no frameworks, no Node, no database. Runs on any ordinary PHP web host.
 
-**Live demo:** the "Call us" button is running in the footer of **[digitalfracture.co.uk](https://digitalfracture.co.uk)** — scroll to the bottom and give it a try.
+**Live demo:** the "Call us" button is running in the footer of **[digitalfracture.co.uk](https://digitalfracture.co.uk)** scroll to the bottom and give it a try.
 
 - **Caller** sees a button (floating or inline), a short reason picker, and a Call button. No account, no app, nothing to install.
 - **Operator** (the business) keeps one page open as their desk phone and answers incoming calls, with the caller's subject and note shown before they pick up.
