@@ -3,6 +3,19 @@
 All notable changes to Nano Call are recorded here. Format loosely follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow [SemVer](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- **Button could overflow narrow mobile viewports.** The launch button used a fixed
+  wide horizontal padding with no width cap, so on a narrow phone it could push the
+  page wider than the screen, toggling a horizontal scrollbar and jolting other
+  fixed-position elements (most visible on pages with two buttons). The button and
+  inline holder now cap at `max-width:100%` with `box-sizing:border-box`, the
+  padding is responsive (`clamp(28px,7vw,64px)`), and the floating launcher is
+  capped at `calc(100vw - 40px)`. Multiple buttons on one page already shared a
+  single overlay; this makes that fully mobile-safe.
+
 ## [1.0.0] - 2026-06-16
 
 First release. A one-click "Call us" button for any website: a visitor taps it,
