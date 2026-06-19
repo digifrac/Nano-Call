@@ -2,6 +2,11 @@
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-digitalfracture-ffdd00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/digitalfracture)
 
+> **⚠️ Concept / proof of concept only - not production ready.**
+> Browser voice calls need a TURN relay to connect reliably (around 70% of calls fail without one), and a browser cannot fully cancel echo from open speakers, so an operator needs a headset. These are limits of doing real-time voice in a web page, not bugs to be fixed.
+>
+> **This project has been retired in favour of [Nano-Chat](../../nano-chat)** - a text-based live-chat widget that keeps the same simple, flat-file, plain-PHP design but works reliably for everyone with no relay and no echo. Nano Call stays here as a working demo and a reference for the reusable installer / licence / embed code.
+
 A one-click **"Call us"** button for any website. A visitor taps it, picks why they are calling, and talks to the business live in the browser. Free, encrypted, peer to peer. Hand built, no frameworks, no Node, no database. Runs on any ordinary PHP web host.
 
 **Live demo:** the "Call us" button is running in the footer of **[digitalfracture.co.uk](https://digitalfracture.co.uk)** scroll to the bottom and give it a try.

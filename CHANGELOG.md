@@ -5,6 +5,15 @@ All notable changes to Nano Call are recorded here. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Marked concept / proof of concept only and retired.** Browser voice needs a TURN
+  relay to connect reliably and cannot fully cancel speaker echo, which are inherent
+  limits of real-time voice in a web page. Development moves to **Nano-Chat**, a
+  text-based live-chat widget with the same flat-file, plain-PHP design but reliable
+  for everyone. Nano Call remains as a demo and a reference for the reusable
+  installer / licence / embed code.
+
 ### Fixed
 
 - **Button could overflow narrow mobile viewports.** The launch button used a fixed
